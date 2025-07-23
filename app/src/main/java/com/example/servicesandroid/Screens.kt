@@ -1257,7 +1257,10 @@ fun SettingsPage(
                     Text(
                         text = stringResource(R.string.github),
                         modifier = Modifier.clickable {
-
+                            val url = "https://github.com/MartinKiendi/Notification-Recovery-and-Log"
+                            val i = Intent(Intent.ACTION_VIEW)
+                            i.data = url.toUri()
+                            context.startActivity(i)
                         }
                     )
                     Text(
