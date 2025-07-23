@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ask_not_permission">Es necesario otorgar permiso para leer notificaciones</string>
+    <string name="delete_all_notifications_warning">¿Seguro que desea eliminar todas las notificaciones?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="home">Inicio</string>
+
+    <string name="delete_notification">Eliminar notificación</string>
+    <string name="group_notifications">Notificaciones de grupo</string>
+    <string name="group_notification_explanation">Esta configuración permite agrupar las notificaciones según las aplicaciones que las envían.</string>
+    <string name="notification_listener_enabled">Escucha de notificaciones habilitada</string>
+    <string name="all_notifications">Todas las notificaciones</string>
+    <string name="deleted_notifications">Notificaciones eliminadas</string>
+
+    <string name="settings">Ajustes</string>
+    <string name="app_theme">Tema de la app</string>
+    <string name="title">Notificaciones</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="date">Fecha:</string>
+    <string name="name">Nombre:</string>
+    <string name="text">Texto:</string>
+    <string name="extended_text">Texto extendido:</string>
+    <string name="show_app">Mostrar app</string>
+    <string name="back">Atrás</string>
+    <string name="notification_deleted">La notificación ha sido eliminada</string>
+    <string name="search">Buscar</string>
+    <string name="notifications_recovery">Recuperación de notificaciones</string>
+    <string name="notification_recovery_service">Servicio de recuperación de notificaciones</string>
+    <string name="enabled">Habilitado</string>
+    <string name="disabled">Deshabilitado</string>
+    <string name="enable_notification_recording">Habilitar la grabación de notificaciones por parte de la aplicación</string>
+    <string name="recording_warning">
+Habilita la grabación de notificaciones. Si está deshabilitada, la aplicación no guardará las notificaciones.
+</string>
+    <string name="ok_1">De acuerdo</string>
+
+    <string name="change_app_theme">Cambiar el tema de la aplicación</string>
+    <string name="choose_app_to_share_noti">Elige las aplicaciones para compartir notificaciones</string>
+    <string name="app_language">Idioma de la aplicación</string>
+    <string name="change_app_language">Cambiar el idioma de la aplicación</string>
+    <string name="app_data">Datos de la aplicación</string>
+    <string name="app_data_warning">Haga clic en este texto para eliminar todos los datos de la aplicación. Esta acción no es reversible.</string>
+    <string name="share_notifications">Compartir notificaciones</string>
+    <string name="share_notifications_warning">Comparte las notificaciones almacenadas en esta aplicación con otra aplicación.</string>
+    <string name="about_app">Acerca de la aplicación</string>
+    <string name="rate_app">Calificar la aplicación</string>
+    <string name="version"><b>Versión:</b> %1$s</string>
+    <string-array name="theme_array">
+        <item>Claro</item>
+        <item>Oscuro</item>
+        <item>Sistema</item>
+    </string-array>
+</resources>

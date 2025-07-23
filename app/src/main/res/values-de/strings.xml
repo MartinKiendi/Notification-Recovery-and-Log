@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ask_not_permission">Die Berechtigung zum Lesen von Benachrichtigungen muss erteilt werden.</string>
+    <string name="delete_all_notifications_warning">Möchten Sie wirklich alle Benachrichtigungen löschen?</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="home">Startseite</string>
+
+    <string name="delete_notification">Benachrichtigung löschen</string>
+    <string name="group_notifications">Benachrichtigungen gruppieren</string>
+    <string name="group_notification_explanation">Mit dieser Einstellung können Sie Benachrichtigungen nach den Apps gruppieren, die sie senden.</string>
+    <string name="notification_listener_enabled">Benachrichtigungs-Listener aktiviert</string>
+    <string name="all_notifications">Alle Benachrichtigungen</string>
+    <string name="deleted_notifications">Gelöschte Benachrichtigungen</string>
+
+    <string name="settings">Einstellungen</string>
+    <string name="app_theme">App-Design</string>
+    <string name="title">Benachrichtigungen</string>
+    <string name="privacy_policy">Datenschutzrichtlinie</string>
+    <string name="date">Datum:</string>
+    <string name="name">Name:</string>
+    <string name="text">Text:</string>
+    <string name="extended_text">Erweiterter Text:</string>
+    <string name="show_app">App anzeigen</string>
+    <string name="back">Zurück</string>
+    <string name="notification_deleted">Benachrichtigung wurde gelöscht</string>
+    <string name="search">Suchen</string>
+    <string name="notifications_recovery">Benachrichtigungswiederherstellung</string>
+    <string name="notification_recovery_service">Benachrichtigungswiederherstellungsdienst</string>
+    <string name="enabled">Aktiviert</string>
+    <string name="disabled">Deaktiviert</string>
+    <string name="ok_1">OK</string>
+
+    <string name="choose_app_to_share_noti">Wähle die Apps zum Teilen von Benachrichtigungen aus</string>
+    <string name="enable_notification_recording">Benachrichtigungsaufzeichnung durch die App aktivieren</string>
+    <string name="recording_warning">
+Aktiviert die Aufzeichnung von Benachrichtigungen. Ist diese Option deaktiviert, werden Benachrichtigungen nicht von der App gespeichert.
+</string>
+    <string name="change_app_theme">App-Design ändern</string>
+    <string name="app_language">App-Sprache</string>
+    <string name="change_app_language">App-Sprache ändern</string>
+    <string name="app_data">Anwendungsdaten</string>
+    <string name="app_data_warning">Klicken Sie auf diesen Text, um alle Anwendungsdaten zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.</string>
+    <string name="share_notifications">Benachrichtigungen teilen</string>
+    <string name="share_notifications_warning">Die in dieser App gespeicherten Benachrichtigungen mit einer anderen App teilen.</string>
+    <string name="about_app">Über die App</string>
+    <string name="rate_app">App bewerten</string>
+    <string name="version"><b>Version:</b> %1$s</string>
+    <string-array name="theme_array">
+        <item>Hell</item>
+        <item>Dunkel</item>
+        <item>System</item>
+    </string-array>
+</resources>

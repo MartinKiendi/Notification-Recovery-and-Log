@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ask_not_permission">Il est nécessaire d\'accorder l\'autorisation de lire les notifications.</string>
+    <string name="delete_all_notifications_warning">Voulez-vous vraiment supprimer toutes les notifications ?</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete">Supprimer</string>
+    <string name="home">Accueil</string>
+    <string name="ok_1">OK</string>
+
+    <string name="delete_notification">Supprimer la notification</string>
+    <string name="group_notifications">Regrouper les notifications</string>
+    <string name="group_notification_explanation">Ce paramètre vous permet de regrouper les notifications en fonction des applications qui les envoient.</string>
+    <string name="notification_listener_enabled">Écouteur de notifications activé</string>
+    <string name="all_notifications">Toutes les notifications</string>
+    <string name="deleted_notifications">Notifications supprimées</string>
+    <string name="choose_app_to_share_noti">Choisissez les applications pour partager les notifications</string>
+
+    <string name="settings">Paramètres</string>
+    <string name="app_theme">Thème de l\'application</string>
+    <string name="title">Notifications</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="date">Date :</string>
+    <string name="name">Nom :</string>
+    <string name="text">Texte :</string>
+    <string name="extended_text">Texte étendu :</string>
+    <string name="show_app">Afficher l\'application</string>
+    <string name="back">Retour</string>
+    <string name="notification_deleted">La notification a été supprimée</string>
+    <string name="search">Rechercher</string>
+    <string name="notifications_recovery">Récupération des notifications</string>
+    <string name="notification_recovery_service">Service de récupération des notifications</string>
+    <string name="enabled">Activé</string>
+    <string name="disabled">Désactivé</string>
+    <string name="enable_notification_recording">Activer les notifications pour être enregistré par l\'application</string>
+    <string name="recording_warning">
+Active l\'enregistrement des notifications. Si cette option est désactivée, les notifications ne seront pas enregistrées par l\'application.
+</string>
+
+    <string name="change_app_theme">Modifier le thème de l\'application</string>
+    <string name="app_language">Langue de l\'application</string>
+    <string name="change_app_language">Modifier la langue de l\'application</string>
+    <string name="app_data">Données de l\'application</string>
+    <string name="app_data_warning">Cliquez sur ce texte pour supprimer toutes les données de l\'application. Cette action est irréversible.</string>
+    <string name="share_notifications">Partager les notifications</string>
+    <string name="share_notifications_warning">Partager les notifications stockées dans cette application avec une autre application.</string>
+    <string name="about_app">À propos de l\'application</string>
+    <string name="rate_app">Évaluer l\'application</string>
+    <string name="version"><b>Version :</b> %1$s</string>
+    <string-array name="theme_array">
+        <item>Clair</item>
+        <item>Sombre</item>
+        <item>Système</item>
+    </string-array>
+</resources>

@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name" translatable="false">Notification Recovery and Log</string>
+    <string name="github" translatable="false">Github</string>
+    <string name="en" translatable="false">English</string>
+    <string name="de" translatable="false">Deutsch</string>
+    <string name="fr" translatable="false">Français</string>
+    <string name="it" translatable="false">Italiano</string>
+    <string name="es" translatable="false">Español</string>
+    <string name="ad_attribution" translatable="false">Ad</string>
+    <string name="choose_app_to_share_noti">Choose the apps to share notifications</string>
+    <string name="grouped_deleted_notifications" translatable="false">Grouped Deleted Notifications</string>
+    <string name="grouped_all_notifications" translatable="false">Grouped All Notifications</string>
+
+    <string name="ask_not_permission">It is necessary to grant permission to read notifications</string>
+    <string name="delete_all_notifications_warning">Are you sure you want to delete all notifications?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="home">Home</string>
+
+    <string name="delete_notification">Delete Notification</string>
+    <string name="group_notifications">Group Notifications</string>
+    <string name="group_notification_explanation">This setting allows you to group notifications according to the apps that send them.</string>
+    <string name="notification_listener_enabled">Notification Listener Enabled</string>
+    <string name="all_notifications">All Notifications</string>
+    <string name="deleted_notifications">Deleted Notifications</string>
+    <string name="ok_1">OK</string>
+
+    <string name="settings">Settings</string>
+    <string name="app_theme">App Theme</string>
+    <string name="title">Notifications</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="date">Date:</string>
+    <string name="name">Name:</string>
+    <string name="text">Text:</string>
+    <string name="extended_text">Extended Text:</string>
+    <string name="show_app">Show App</string>
+    <string name="back">Back</string>
+    <string name="notification_deleted">Notification has been deleted</string>
+    <string name="search">Search</string>
+    <string name="notifications_recovery">Notifications Recovery</string>
+    <string name="notification_recovery_service">Notification Recovery Service</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="enable_notification_recording">Enable notifications to be recorded by the app</string>
+    <string name="recording_warning">
+        Enables the recording of notifications.When Disabled,notifications will not be saved by the app.
+    </string>
+
+
+    <string name="change_app_theme">Change app theme</string>
+    <string name="app_language">App Language</string>
+    <string name="change_app_language">Change app language</string>
+    <string name="app_data">Application Data</string>
+    <string name="app_data_warning">Click this text to delete all application data. This action is not reversible.</string>
+    <string name="share_notifications">Share Notifications</string>
+    <string name="share_notifications_warning">Share the notifications stored in this app to another App.</string>
+    <string name="about_app">About the Application</string>
+    <string name="rate_app">Rate App</string>
+    <string name="version"><b>Version:</b>  %1$s</string>
+
+    <string-array name="theme_array">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System</item>
+    </string-array>
+    <string-array name="language_array" translatable="false">
+        <item>@string/en</item>
+        <item>@string/de</item>
+        <item>@string/fr</item>
+        <item>@string/it</item>
+        <item>@string/es</item>
+    </string-array>
+</resources>
