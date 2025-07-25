@@ -18,4 +18,10 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+#-renamesourcefileattribute S
+
+ -keepclassmembers enum * {
+            public static **[] values();
+            public static ** valueOf(java.lang.String);
+        }
+        -keep enum com.example.servicesandroid.datastore.Theme { *; }

@@ -1,6 +1,7 @@
 package com.example.servicesandroid
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -10,6 +11,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
+import androidx.annotation.IntegerRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -93,6 +95,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.servicesandroid.datastore.AppLanguage
+import com.example.servicesandroid.datastore.SortOrder
+import com.example.servicesandroid.datastore.Theme
 import com.example.servicesandroid.datastore.UserPreferences
 import com.example.servicesandroid.room.Notification
 import com.example.servicesandroid.room.stringToBitmap
@@ -557,13 +562,22 @@ fun HomeApp(
     val context = LocalContext.current
     val activity = LocalActivity.current
 
-    val theme = context.resources.getStringArray(R.array.theme_array)
+
+    val notifications = when(userPreferences.sortOrder){
+        SortOrder.LATEST.name  -> appNotificationList.notifications.reversed()  // Latest
+        SortOrder.OLDEST.name -> appNotificationList.notifications // Oldest
+        SortOrder.ASCENDING.name -> appNotificationList.notifications.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.title }
+        ) // Ascending
+        SortOrder.DESCENDING.name -> appNotificationList.notifications.sortedByDescending{it.title} // Descending
+        else -> appNotificationList.notifications.reversed()  // Latest
+    }
 
     NotificationLogAndroidTheme(
         darkTheme = when (userPreferences.appTheme) {
-            theme[0] -> false
-            theme[1] -> true
-            theme[2] -> isSystemInDarkTheme()
+            Theme.LIGHT.name -> false
+            Theme.DARK.name -> true
+            Theme.SYSTEM.name -> isSystemInDarkTheme()
             else -> isSystemInDarkTheme()
         }
     ) {
@@ -572,6 +586,7 @@ fun HomeApp(
             startDestination = Route.Home.name,
             modifier = Modifier
         ) {
+
             composable(Route.Home.name) {
                 Scaffold(
                     topBar = {
@@ -630,7 +645,7 @@ fun HomeApp(
             }
             composable(Route.AllNotifications.name) {
                 NotificationScreen(
-                    notificationList = appNotificationList.notifications.reversed().filter {
+                    notificationList = notifications.filter {
                         it.isTheOne(uiState.searchTerm)
                     },
                     showNotification = { notificationEntity ->
@@ -672,7 +687,7 @@ fun HomeApp(
                         )
                         navController.navigate(Route.NotificationByPackageName.name)
                     },
-                    map = appNotificationList.notifications.reversed().filter {
+                    map = notifications.filter {
                         it.isTheOne(uiState.searchTerm)
                     }.groupBy {
                         it.packageName
@@ -724,7 +739,7 @@ fun HomeApp(
                         notificationViewModel.clearAllNotifications()
                     },
                     setAppLanguage = { lang ->
-                        notificationViewModel.setAppLanguage(lang)
+                        notificationViewModel.setAppLanguage(getLanguageFromCode(lang).name)
                     },
                     setGroupNotifications = { toGroup ->
                         notificationViewModel.setToGroupNotifications(toGroup)
@@ -735,9 +750,14 @@ fun HomeApp(
                     setIfNotificationListenerEnabled = {
                     },
                     changeAppTheme = { theme ->
-                        notificationViewModel.setAppTheme(theme)
+                        notificationViewModel.setAppTheme(getThemeForSettings(context,theme).name)
                     },
-                    notifications = appNotificationList.notifications
+                    notifications = notifications,
+                    setSortOrder = { sortOrder ->
+                        val sortOrder = getSortOrderForSettings(context,sortOrder)
+                        //Toast.makeText(context, sortOrder.name, Toast.LENGTH_SHORT).show()
+                        notificationViewModel.setSortOrder(sortOrder.name)
+                    }
                 )
             }
 
@@ -920,6 +940,7 @@ fun SettingsPage(
     uiState: UiState,
     clearAllData: () -> Unit,
     setAppLanguage: (String) -> Unit,
+    setSortOrder: (String) -> Unit,
     changeAppTheme: (String) -> Unit,
     setGroupNotifications: (Boolean) -> Unit,
     updateShowDialog: (Pair<Boolean, String>) -> Unit,
@@ -980,9 +1001,7 @@ fun SettingsPage(
                             checked = userPreferences.isNotificationListenerEnabled,
                             onCheckedChange = {
                                 setIfNotificationListenerEnabled(it)
-                            },
-
-                            )
+                            },)
                     }
 
                 }
@@ -991,7 +1010,7 @@ fun SettingsPage(
             SettingsSection(title = stringResource(R.string.app_theme)) {
                 TextColumn(
                     title = stringResource(R.string.change_app_theme),
-                    text = userPreferences.appTheme,
+                    text = getThemeText(context, userPreferences.appTheme),
                     modifier = Modifier.clickable {
                         updateShowDialog(Pair(true, "Theme"))
                     }
@@ -1000,7 +1019,7 @@ fun SettingsPage(
                     ChangeSettingsDialog(
                         title = stringResource(R.string.change_app_theme),
                         name = R.array.theme_array,
-                        selectedOption = userPreferences.appTheme,
+                        selectedOption = getThemeText(context, userPreferences.appTheme),
                         changeShouldShowDialog = {
                             updateShowDialog(it)
                         },
@@ -1017,7 +1036,7 @@ fun SettingsPage(
                 val context = LocalContext.current
                 TextColumn(
                     title = stringResource(R.string.change_app_language),
-                    text = userPreferences.appLanguage,
+                    text = getLanguageText(context, userPreferences.appLanguage),
                     modifier = Modifier.clickable {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
@@ -1042,17 +1061,18 @@ fun SettingsPage(
                     ChangeSettingsDialog(
                         title = stringResource(R.string.change_app_language),
                         name = R.array.language_array,
-                        selectedOption = userPreferences.appLanguage,
+                        selectedOption = getLanguageText(context,userPreferences.appLanguage),
                         changeShouldShowDialog = {
                             updateShowDialog(it)
                         },
                         changeOneSetting = { setting ->
                             if (setting.second == "Language") {
                                 val selectedLocale = setting.first // Full name of language
-                                setAppLanguage(selectedLocale) // Save language in preferences
                                 val lang = localeOptions.find {
                                     it.second == selectedLocale
                                 }?.first // Get language code for setting language
+                                setAppLanguage(lang.toString()) // Save language in preferences
+
                                 AppCompatDelegate.setApplicationLocales(
                                     LocaleListCompat.forLanguageTags(
                                         lang.toString()
@@ -1084,6 +1104,36 @@ fun SettingsPage(
                         })
                 }
 
+            }
+            HorizontalDivider()
+            SettingsSection(
+                title = stringResource(R.string.sort_order)
+            ) {
+                TextColumn(
+                    title = stringResource(R.string.set_sort_order),
+                    text = getSortOrderText(context,userPreferences.sortOrder),
+                    modifier = Modifier.clickable {
+                        updateShowDialog(Pair(true, "Sort_Order"))
+                    }
+                )
+                if (uiState.showDialog.first == true
+                    && uiState.showDialog.second == "Sort_Order"
+                ) {
+                    ChangeSettingsDialog(
+                        title = stringResource(R.string.set_sort_order),
+                        name = R.array.sort_array,
+                        selectedOption = getSortOrderText(context,userPreferences.sortOrder),
+                        changeShouldShowDialog = {
+                            updateShowDialog(it)
+                        },
+                        changeOneSetting = { setting ->
+                            if (setting.second == "Sort_Order") {
+                                //Toast.makeText(context, setting.first, Toast.LENGTH_SHORT).show()
+                                setSortOrder(setting.first)
+                            }
+                        }
+                    )
+                }
             }
             HorizontalDivider()
             SettingsSection(
@@ -1182,7 +1232,12 @@ fun SettingsPage(
                                         notifications.filter {
                                             it.packageName in packageNames
                                         }.joinToString {
-                                            "Notification : ${getAppName(it.packageName,context.packageManager)} " +
+                                            "Notification : ${
+                                                getAppName(
+                                                    it.packageName,
+                                                    context.packageManager
+                                                )
+                                            } " +
                                                     "$it\n\n"
                                         }
 
@@ -1257,7 +1312,8 @@ fun SettingsPage(
                     Text(
                         text = stringResource(R.string.github),
                         modifier = Modifier.clickable {
-                            val url = "https://github.com/MartinKiendi/Notification-Recovery-and-Log"
+                            val url =
+                                "https://github.com/MartinKiendi/Notification-Recovery-and-Log"
                             val i = Intent(Intent.ACTION_VIEW)
                             i.data = url.toUri()
                             context.startActivity(i)
@@ -1285,7 +1341,6 @@ fun SettingsPage(
     }
 }
 
-
 @Composable
 fun RadioButtonSingleSelection(
     name: Int,
@@ -1297,6 +1352,7 @@ fun RadioButtonSingleSelection(
     val type = when (name) {
         R.array.theme_array -> "Theme"
         R.array.language_array -> "Language"
+        R.array.sort_array -> "Sort_Order"
         else -> ""
     }
     val listOfOptions = context.resources.getStringArray(name)
@@ -1310,7 +1366,10 @@ fun RadioButtonSingleSelection(
                     .height(56.dp)
                     .selectable(
                         selected = (text == selectedOption),
-                        onClick = { onOptionSelected(Pair(text, type)) },
+                        onClick = {
+                            //Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+                            onOptionSelected(Pair(text, type))
+                        },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 16.dp),
@@ -1373,10 +1432,11 @@ fun SettingsPagePreview() {
             title = "Settings",
             goBack = {},
             userPreferences = UserPreferences(
-                appLanguage = "EN",
+                appLanguage = AppLanguage.ENGLISH.name,
                 toGroupNotifications = false,
-                appTheme = "SYSTEM",
-                isNotificationListenerEnabled = false
+                appTheme = Theme.SYSTEM.name,
+                isNotificationListenerEnabled = false,
+                sortOrder = SortOrder.ASCENDING.name
             ),
             clearAllData = {},
             setAppLanguage = {},
@@ -1385,7 +1445,8 @@ fun SettingsPagePreview() {
             uiState = UiState(),
             updateShowDialog = {},
             changeAppTheme = {},
-            notifications = listOf()
+            notifications = listOf(),
+            setSortOrder = {}
         )
     }
 }

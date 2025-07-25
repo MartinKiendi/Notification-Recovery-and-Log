@@ -6,6 +6,16 @@
     <string name="delete">Löschen</string>
     <string name="home">Startseite</string>
 
+    <string name="latest">Neueste Benachrichtigungen</string>
+    <string name="oldest">Älteste Benachrichtigungen</string>
+    <string name="ascending">Aufsteigend (A-Z)</string>
+    <string name="descending">Absteigend (Z-A)</string>
+    <string name="sort_order">Sortierreihenfolge</string>
+    <string name="set_sort_order">Sortierreihenfolge der Benachrichtigungen festlegen</string>
+        <string name="light">Licht</string>
+        <string name="dark">Dunkel</string>
+        <string name="system">System</string>
+
     <string name="delete_notification">Benachrichtigung löschen</string>
     <string name="group_notifications">Benachrichtigungen gruppieren</string>
     <string name="group_notification_explanation">Mit dieser Einstellung können Sie Benachrichtigungen nach den Apps gruppieren, die sie senden.</string>
@@ -46,9 +56,5 @@ Aktiviert die Aufzeichnung von Benachrichtigungen. Ist diese Option deaktiviert,
     <string name="about_app">Über die App</string>
     <string name="rate_app">App bewerten</string>
     <string name="version"><b>Version:</b> %1$s</string>
-    <string-array name="theme_array">
-        <item>Hell</item>
-        <item>Dunkel</item>
-        <item>System</item>
-    </string-array>
+
 </resources>

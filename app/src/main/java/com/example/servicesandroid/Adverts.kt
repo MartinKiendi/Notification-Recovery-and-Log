@@ -37,37 +37,42 @@ fun showInterstitialAd(
     activity: Activity?,
     goToPreviousPage: () -> Unit
 ) {
-    InterstitialAd.load(
-        context,
-        AD_UNIT_ID,
-        AdRequest.Builder().build(),
-        object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-            }
+    if (!checkForInternet(context)) {
+        goToPreviousPage()
+    } else{
+        InterstitialAd.load(
+            context,
+            AD_UNIT_ID,
+            AdRequest.Builder().build(),
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    goToPreviousPage()
+                }
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() {
+                            super.onAdClicked()
+                            goToPreviousPage()
+                        }
 
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdClicked() {
-                        super.onAdClicked()
-                        goToPreviousPage()
+                        override fun onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent()
+                            goToPreviousPage()
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                            super.onAdFailedToShowFullScreenContent(p0)
+                            goToPreviousPage()
+                        }
                     }
-
-                    override fun onAdDismissedFullScreenContent() {
-                        super.onAdDismissedFullScreenContent()
-                        goToPreviousPage()
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                        super.onAdFailedToShowFullScreenContent(p0)
-                        goToPreviousPage()
+                    if (activity != null) {
+                        interstitialAd.show(activity)
                     }
                 }
-                if (activity != null) {
-                    interstitialAd.show(activity)
-                }
-            }
-        },
-    )
+            },
+        )
+    }
+
 }
 @Composable
 fun AdBanner(modifier: Modifier = Modifier) {

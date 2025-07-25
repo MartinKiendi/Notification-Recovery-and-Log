@@ -7,6 +7,17 @@
     <string name="home">Home</string>
     <string name="ok_1">OK</string>
 
+    <string name="latest">Ultime notifiche</string>
+    <string name="oldest">Notifiche più vecchie</string>
+    <string name="ascending">Crescente (A-Z)</string>
+    <string name="descending">Decrescente (Z-A)</string>
+    <string name="sort_order">Ordinamento</string>
+    <string name="set_sort_order">Imposta l\'ordinamento delle notifiche</string>
+    <string name="light">Chiaro</string>
+    <string name="dark">Scuro</string>
+    <string name="system">Sistema</string>
+
+
     <string name="delete_notification">Elimina notifica</string>
     <string name="group_notifications">Raggruppa notifiche</string>
     <string name="group_notification_explanation">Questa impostazione consente di raggruppare le notifiche in base alle app che le inviano.</string>
@@ -47,9 +58,5 @@ Abilita la registrazione delle notifiche. Se disabilitata, le notifiche non verr
     <string name="about_app">Informazioni sull\'applicazione</string>
     <string name="rate_app">Valuta l\'app</string>
     <string name="version"><b>Versione:</b> %1$s</string>
-    <string-array name="theme_array">
-        <item>Chiaro</item>
-        <item>Scuro</item>
-        <item>Sistema</item>
-    </string-array>
+
 </resources>

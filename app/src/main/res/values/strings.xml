@@ -17,6 +17,27 @@
     <string name="delete">Delete</string>
     <string name="home">Home</string>
 
+    <string name="latest">Latest Notifications</string>
+    <string name="oldest">Oldest Notifications</string>
+    <string name="ascending">Ascending (A-Z)</string>
+    <string name="descending">Descending (Z -A)</string>
+    <string name="sort_order">Sort Order</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system">System</string>
+    <string name="set_sort_order">Set sort order of Notifications</string>
+    <string-array name="sort_array">
+        <item>@string/latest</item>
+        <item>@string/oldest</item>
+        <item>@string/ascending</item>
+        <item>@string/descending</item>
+    </string-array>
+    <string-array name="theme_array">
+        <item>@string/system</item>
+        <item>@string/light</item>
+        <item>@string/dark</item>
+    </string-array>
+
     <string name="delete_notification">Delete Notification</string>
     <string name="group_notifications">Group Notifications</string>
     <string name="group_notification_explanation">This setting allows you to group notifications according to the apps that send them.</string>
@@ -58,11 +79,9 @@
     <string name="rate_app">Rate App</string>
     <string name="version"><b>Version:</b>  %1$s</string>
 
-    <string-array name="theme_array">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>System</item>
-    </string-array>
+
+
+
     <string-array name="language_array" translatable="false">
         <item>@string/en</item>
         <item>@string/de</item>

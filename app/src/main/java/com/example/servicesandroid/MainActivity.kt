@@ -64,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         )
         val language = localeOptions.find { it.first == languageCode }?.second
 
-        Log.e("languageCode", languageCode)
-        Log.e("language", language.toString())
-        notificationViewModel.setAppLanguage(language.toString())
+        val languageForSettings = getLanguageFromCode(languageCode)
+        Toast.makeText(this, languageCode, Toast.LENGTH_SHORT).show()
+        notificationViewModel.setAppLanguage(languageForSettings.name)
 
         CoroutineScope(Dispatchers.IO).launch {
             // Initialize the Google Mobile Ads SDK on a background thread.

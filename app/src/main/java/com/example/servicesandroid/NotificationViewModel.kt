@@ -3,7 +3,10 @@ package com.example.servicesandroid
 import androidx.lifecycle.ViewModel
 import com.example.servicesandroid.room.NotificationRepository
 import androidx.lifecycle.viewModelScope
+import com.example.servicesandroid.datastore.AppLanguage
 import com.example.servicesandroid.datastore.PreferencesRepository
+import com.example.servicesandroid.datastore.SortOrder
+import com.example.servicesandroid.datastore.Theme
 import com.example.servicesandroid.datastore.UserPreferences
 import com.example.servicesandroid.room.Notification
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,13 +70,6 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
-    fun updateCurrentPage(route: Route) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                currentRoute = route.title
-            )
-        }
-    }
     fun updateCurrentNotification(notification: Notification?) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -104,10 +100,11 @@ class NotificationViewModel @Inject constructor(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = UserPreferences(
-                    appLanguage = "English",
+                    appLanguage = AppLanguage.ENGLISH.name,
                     toGroupNotifications = false,
-                    appTheme = "System",
-                    isNotificationListenerEnabled = false
+                    appTheme = Theme.SYSTEM.name,
+                    sortOrder = SortOrder.LATEST.name,
+                    isNotificationListenerEnabled = false,
                 )
             )
 
@@ -117,6 +114,10 @@ class NotificationViewModel @Inject constructor(
 
     fun setAppTheme(theme: String) = viewModelScope.launch(Dispatchers.IO) {
         userPreferencesRepository.setAppTheme(theme)
+    }
+
+    fun setSortOrder(sortOrder: String) = viewModelScope.launch(Dispatchers.IO) {
+        userPreferencesRepository.setSortOrder(sortOrder)
     }
 
     fun setToGroupNotifications(toGroup: Boolean) = viewModelScope.launch(Dispatchers.IO) {
@@ -134,11 +135,9 @@ class NotificationViewModel @Inject constructor(
 
 enum class Route(val title: Int) {
     AllNotifications(R.string.all_notifications),
-    DeletedNotifications(R.string.deleted_notifications),
     Home(R.string.home),
     Settings(R.string.settings),
     GroupAllNotifications(R.string.grouped_all_notifications),
-    GroupDeletedNotifications(R.string.grouped_deleted_notifications),
     NotificationByPackageName(R.string.app_name)
 }
 

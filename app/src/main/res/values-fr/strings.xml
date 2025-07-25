@@ -7,6 +7,17 @@
     <string name="home">Accueil</string>
     <string name="ok_1">OK</string>
 
+
+    <string name="latest">Dernières notifications</string>
+    <string name="oldest">Notifications les plus anciennes</string>
+    <string name="ascending">Croissant (A-Z)</string>
+    <string name="descending">Décroissant (Z-A)</string>
+    <string name="sort_order">Ordre de tri</string>
+    <string name="set_sort_order">Définir l\'ordre de tri des notifications</string>
+    <string name="light">Clair</string>
+    <string name="dark">Sombre</string>
+    <string name="system">Système</string>
+
     <string name="delete_notification">Supprimer la notification</string>
     <string name="group_notifications">Regrouper les notifications</string>
     <string name="group_notification_explanation">Ce paramètre vous permet de regrouper les notifications en fonction des applications qui les envoient.</string>
@@ -46,9 +57,4 @@ Active l\'enregistrement des notifications. Si cette option est désactivée, le
     <string name="about_app">À propos de l\'application</string>
     <string name="rate_app">Évaluer l\'application</string>
     <string name="version"><b>Version :</b> %1$s</string>
-    <string-array name="theme_array">
-        <item>Clair</item>
-        <item>Sombre</item>
-        <item>Système</item>
-    </string-array>
 </resources>

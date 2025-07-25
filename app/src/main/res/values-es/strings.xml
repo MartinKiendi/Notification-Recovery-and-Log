@@ -6,6 +6,17 @@
     <string name="delete">Eliminar</string>
     <string name="home">Inicio</string>
 
+
+    <string name="latest">Notificaciones más recientes</string>
+    <string name="oldest">Notificaciones más antiguas</string>
+    <string name="ascending">Ascendente (A-Z)</string>
+    <string name="descending">Descendente (Z-A)</string>
+    <string name="sort_order">Orden de clasificación</string>
+    <string name="set_sort_order">Establecer el orden de clasificación de las notificaciones</string>
+    <string name="light">Claro</string>
+    <string name="dark">Oscuro</string>
+    <string name="system">Sistema</string>
+
     <string name="delete_notification">Eliminar notificación</string>
     <string name="group_notifications">Notificaciones de grupo</string>
     <string name="group_notification_explanation">Esta configuración permite agrupar las notificaciones según las aplicaciones que las envían.</string>
@@ -46,9 +57,5 @@ Habilita la grabación de notificaciones. Si está deshabilitada, la aplicación
     <string name="about_app">Acerca de la aplicación</string>
     <string name="rate_app">Calificar la aplicación</string>
     <string name="version"><b>Versión:</b> %1$s</string>
-    <string-array name="theme_array">
-        <item>Claro</item>
-        <item>Oscuro</item>
-        <item>Sistema</item>
-    </string-array>
+
 </resources>

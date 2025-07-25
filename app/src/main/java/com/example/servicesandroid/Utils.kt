@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -17,6 +19,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.FileProvider
+import com.example.servicesandroid.datastore.AppLanguage
+import com.example.servicesandroid.datastore.SortOrder
+import com.example.servicesandroid.datastore.Theme
 import com.example.servicesandroid.room.Notification
 import java.io.File
 
@@ -41,6 +46,88 @@ fun isNotificationServiceEnabled(
     return enabledListeners?.contains(componentName.flattenToString()) == true
 }
 
+fun getThemeText(context: Context, theme: String): String {
+    return when(theme){
+        Theme.LIGHT.name -> context.getString(R.string.light)
+        Theme.DARK.name -> context.getString(R.string.dark)
+        Theme.SYSTEM.name -> context.getString(R.string.system)
+        else -> context.getString(R.string.system)
+    }
+}
+fun getSortOrderText(context: Context, sortOrder:String): String {
+    return when(sortOrder){
+        SortOrder.LATEST.name -> context.getString(R.string.latest)
+        SortOrder.OLDEST.name -> context.getString(R.string.oldest)
+        SortOrder.ASCENDING.name -> context.getString(R.string.ascending)
+        SortOrder.DESCENDING.name -> context.getString(R.string.descending)
+        else -> context.getString(R.string.latest)
+    }
+}
+fun getLanguageText(context: Context, language: String): String {
+    return when(language){
+        AppLanguage.ENGLISH.name -> context.getString(R.string.en)
+        AppLanguage.DEUTSCH.name -> context.getString(R.string.de)
+        AppLanguage.FRENCH.name -> context.getString(R.string.fr)
+        AppLanguage.ITALIAN.name -> context.getString(R.string.it)
+        AppLanguage.ESPANOL.name -> context.getString(R.string.es)
+        else -> context.getString(R.string.en)
+    }
+}
+
+fun getThemeForSettings(context: Context, string: String): Theme {
+    return when (string) {
+        context.getString(R.string.light) -> Theme.LIGHT
+        context.getString(R.string.dark) -> Theme.DARK
+        context.getString(R.string.system) -> Theme.SYSTEM
+        else -> Theme.SYSTEM
+    }
+}
+fun getSortOrderForSettings(context: Context,string: String): SortOrder {
+    return when(string){
+        context.getString(R.string.latest) -> SortOrder.LATEST
+        context.getString(R.string.oldest) -> SortOrder.OLDEST
+        context.getString(R.string.ascending) -> SortOrder.ASCENDING
+        context.getString(R.string.descending) -> SortOrder.DESCENDING
+        else -> SortOrder.LATEST
+    }
+}
+fun getLanguageFromCode(code: String): AppLanguage{
+    return when(code){
+        "en" -> AppLanguage.ENGLISH
+        "de" -> AppLanguage.DEUTSCH
+        "fr" -> AppLanguage.FRENCH
+        "it" -> AppLanguage.ITALIAN
+        "es" -> AppLanguage.ESPANOL
+        else -> AppLanguage.ENGLISH
+    }
+}
+
+fun checkForInternet(context: Context): Boolean {
+
+    // register activity with the connectivity manager service
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as
+            ConnectivityManager
+
+    // Returns a Network object corresponding to
+    // the currently active default data network.
+    val network = connectivityManager.activeNetwork ?: return false
+
+    // Representation of the capabilities of an active network.
+    val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+    return when {
+        // Indicates this network uses a Wi-Fi transport,
+        // or WiFi has network connectivity
+        activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+
+        // Indicates this network uses a Cellular transport. or
+        // Cellular has network connectivity
+        activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+
+        // else return false
+        else -> false
+    }
+}
 fun Notification.isTheOne(searchTerm: String) : Boolean = (
         this.title.contains(searchTerm, ignoreCase = true) ||
         this.text.contains(searchTerm, ignoreCase = true) ||
