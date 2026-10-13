@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.example.servicesandroid"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.servicesandroid"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -81,5 +81,6 @@ dependencies {
 
     implementation ("org.apache.commons:commons-lang3:3.17.0")
     implementation("androidx.navigation:navigation-compose:2.7.4")
-    implementation ("com.google.android.gms:play-services-ads:24.4.0")
+    implementation("com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.5.0")
+    implementation("com.google.android.ump:user-messaging-platform:4.0.0")
 }

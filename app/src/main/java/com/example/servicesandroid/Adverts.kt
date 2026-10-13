@@ -1,37 +1,201 @@
 package com.example.servicesandroid
 
+
 import android.app.Activity
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.VideoController
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.google.android.libraries.ads.mobile.sdk.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.banner.AdSize
+import com.google.android.libraries.ads.mobile.sdk.banner.AdView
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadResult
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.common.PreloadConfiguration
+import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdPreloader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+object AdRepository {
+    private const val TAG = "AdRepository"
+    private const val TEST_APP_ID = "ca-app-pub-3940256099942544~3347511713"
+    private const val TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+
+    private var isInitialized = false
+
+    /**
+     * Initializes the GMA SDK and triggers an initial preload if online.
+     */
+    fun initialize(context: Context, scope: CoroutineScope) {
+        if (isInitialized) return
+
+        if (!isDeviceOnline(context)) {
+            Log.d(TAG, "Device offline during initialization. Preloading skipped.")
+            return
+        }
+
+        scope.launch(Dispatchers.IO) {
+            MobileAds.initialize(
+                context.applicationContext,
+                InitializationConfig.Builder(TEST_APP_ID).build()
+            ) {
+                isInitialized = true
+                Log.d(TAG, "GMA SDK Initialized. Starting preloader.")
+                startPreloading()
+            }
+        }
+    }
+
+    /**
+     * Instructs the Next-Gen preloader to begin caching an ad item.
+     */
+    private fun startPreloading() {
+        val adRequest = AdRequest.Builder(TEST_AD_UNIT_ID).build()
+        val preloadConfig = PreloadConfiguration(adRequest)
+        InterstitialAdPreloader.start(TEST_AD_UNIT_ID, preloadConfig)
+    }
+
+    /**
+     * Safe entry-point for the UI layer to acquire a cached Interstitial Ad.
+     * Evaluates network state proactively before querying the SDK cache.
+     */
+    fun fetchPreloadedAd(context: Context): InterstitialAd? {
+        if (!isDeviceOnline(context)) {
+            Log.d(TAG, "Device is offline. Rejecting ad retrieval.")
+            return null
+        }
+
+        return InterstitialAdPreloader.pollAd(TEST_AD_UNIT_ID)
+    }
+
+    /**
+     * Utility method verifying whether active data transport lanes exist.
+     */
+    private fun isDeviceOnline(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+    }
+
+
+}
+fun tryDisplayingAdFlow(context: Context, activity : Activity?, proceedToContent : () -> Unit) {
+    val ad = AdRepository.fetchPreloadedAd(context)
+
+    if (ad != null) {
+        ad.adEventCallback = object : InterstitialAdEventCallback {
+            override fun onAdClicked() {
+                super.onAdClicked()
+                proceedToContent()
+            }
+            override fun onAdShowedFullScreenContent() {
+                Log.d(TAG, "Ad rendering on screen.")
+                proceedToContent()
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                Log.d(TAG, "Ad dismissed by user.")
+                proceedToContent()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
+                Log.e(TAG, "Ad failed mid-display: ${fullScreenContentError.message}")
+                proceedToContent()
+            }
+        }
+        if (activity != null){
+            ad.show(activity)
+        }
+    } else {
+        Log.d(TAG, "Repository returned no ad. Seamless content transition.")
+        proceedToContent()
+    }
+}
+
+
+
+
+@Composable
+fun BannerAdView(
+    modifier: Modifier = Modifier,
+    adUnitId: String = "ca-app-pub-3940256099942544/6300978111" // Test ID
+) {
+    // Initialize required variables.
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+    var bannerAdState by remember { mutableStateOf<BannerAd?>(null) }
+
+    // Request a large anchored adaptive banner with a width of 360.
+    val adSize = AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(context, 360)
+
+// Load the ad when the screen is active.
+    val coroutineScope = rememberCoroutineScope()
+    val isPreviewMode = LocalInspectionMode.current
+    LaunchedEffect(context) {
+        bannerAdState?.destroy()
+        if (!isPreviewMode) {
+            coroutineScope.launch {
+                when (val result = BannerAd.load(BannerAdRequest.Builder(adUnitId, adSize).build())) {
+                    is AdLoadResult.Success -> {
+                        bannerAdState = result.ad
+                    }
+                    is AdLoadResult.Failure -> {
+                        Log.w(TAG, "Banner ad failed to load: $result.error")
+                    }
+                }
+            }
+        }
+    }
+
+        bannerAdState?.let { bannerAd ->
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                // Display the ad within an AndroidView.
+                AndroidView(
+                    modifier = modifier.wrapContentSize(),
+                    factory = { bannerAd.getView(activity!!) },
+                )
+            }
+        }
+    DisposableEffect(Unit) { onDispose { bannerAdState?.destroy() } }
+}
+
 
 const val NATIVE_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110"
 const val AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
 
+/*
 fun showInterstitialAd(
     context: Context,
     activity: Activity?,
@@ -214,4 +378,6 @@ fun NativeAdJetPack(
         modifier = modifier.wrapContentHeight().fillMaxWidth()
     )
 }
+*/
+
 

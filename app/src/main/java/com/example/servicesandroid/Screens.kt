@@ -1,7 +1,6 @@
 package com.example.servicesandroid
 
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -11,7 +10,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
-import androidx.annotation.IntegerRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,6 +38,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
@@ -99,10 +98,10 @@ import com.example.servicesandroid.datastore.AppLanguage
 import com.example.servicesandroid.datastore.SortOrder
 import com.example.servicesandroid.datastore.Theme
 import com.example.servicesandroid.datastore.UserPreferences
+import com.example.servicesandroid.googleads.GoogleMobileAdsConsentManager
 import com.example.servicesandroid.room.Notification
 import com.example.servicesandroid.room.stringToBitmap
 import com.example.servicesandroid.ui.theme.NotificationLogAndroidTheme
-import com.google.android.gms.ads.nativead.NativeAd
 import java.io.File
 import java.time.LocalDate
 
@@ -483,7 +482,7 @@ fun NotificationScreen(
                     .padding(start = 8.dp, end = 8.dp, top = 2.dp, bottom = 8.dp)
                     .fillMaxWidth()
             )
-            AdBanner()
+            BannerAdView()
             NotificationList(
                 notificationList = notificationList,
                 onClick = { notificationEntity ->
@@ -494,7 +493,8 @@ fun NotificationScreen(
                 },
                 modifier = Modifier.weight(1f)
             )
-            AdBanner()
+            BannerAdView()
+
             if (uiState.shouldShowNotification) {
                 uiState.currentNotification?.let {
                     NotificationDetailsDialog(
@@ -552,9 +552,9 @@ fun HomeItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeApp(
-    listOfAds: List<NativeAd>,
     notificationViewModel: NotificationViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    googleMobileAdsConsentManager: GoogleMobileAdsConsentManager
 ) {
     val appNotificationList by notificationViewModel.appNotifications.collectAsState()
     val uiState by notificationViewModel.uiState.collectAsState()
@@ -599,6 +599,12 @@ fun HomeApp(
                             actions = {
                                 IconButton(
                                     onClick = {
+                                        tryDisplayingAdFlow(
+                                            context = context,
+                                            activity = activity
+                                        ){
+
+                                        }
                                         navController.navigate(Route.Settings.name)
                                     }
                                 ) {
@@ -607,6 +613,23 @@ fun HomeApp(
                                         contentDescription = stringResource(R.string.settings)
                                     )
                                 }
+                                AnimatedVisibility( visible = googleMobileAdsConsentManager.isPrivacyOptionsRequired) {
+                                    IconButton(
+                                        onClick = {
+                                            activity?.let { it1 ->
+                                                googleMobileAdsConsentManager.showPrivacyOptionsForm(it1) { error ->
+                                                    error?.let { Toast.makeText(activity, it.message, Toast.LENGTH_SHORT).show() }
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Info,
+                                            contentDescription = stringResource(R.string.title)
+                                        )
+                                    }
+                                }
+
                             }
                         )
                     },
@@ -621,16 +644,21 @@ fun HomeApp(
                             title = stringResource(R.string.all_notifications),
                             iconName = "Home",
                             onClick = {
+                                tryDisplayingAdFlow(
+                                    context = context,
+                                    activity = activity
+                                ){
+
+                                }
                                 if (!userPreferences.toGroupNotifications) {
                                     navController.navigate(Route.AllNotifications.name)
                                 } else {
                                     navController.navigate(Route.GroupAllNotifications.name)
                                 }
-
                             }
                         )
                         Spacer(Modifier.height(16.dp))
-                        AnimatedVisibility(listOfAds.isNotEmpty()) {
+                        /*AnimatedVisibility(listOfAds.isNotEmpty()) {
                             NativeAdJetPack(
                                 nativeAd = listOfAds.random(),
                                 modifier = Modifier
@@ -639,7 +667,7 @@ fun HomeApp(
                                         horizontal = 12.dp, vertical = 8.dp
                                     )
                             )
-                        }
+                        }*/
                     }
                 }
             }
@@ -664,10 +692,7 @@ fun HomeApp(
                         notificationViewModel.deleteNotification(thisNotification)
                     },
                     goBack = {
-                        showInterstitialAd(context, activity) {
-                            notificationViewModel.updateSearchTerm("")
-                            navController.navigateUp()
-                        }
+                        navController.navigateUp()
                     },
                     title = stringResource(Route.AllNotifications.title),
                 )
@@ -676,10 +701,7 @@ fun HomeApp(
                 GroupedNotificationsPage(
                     title = stringResource(R.string.group_notifications),
                     goBack = {
-                        showInterstitialAd(context, activity) {
-                            notificationViewModel.updateSearchTerm("")
-                            navController.navigateUp()
-                        }
+                        navController.navigateUp()
                     },
                     goToNextPage = { packageName, notifications ->
                         notificationViewModel.updateNotificationsByPackageName(
@@ -727,10 +749,7 @@ fun HomeApp(
             composable(Route.Settings.name) {
                 SettingsPage(
                     goBack = {
-                        showInterstitialAd(context, activity) {
-                            notificationViewModel.updateSearchTerm("")
-                            navController.navigateUp()
-                        }
+                        navController.navigateUp()
                     },
                     title = stringResource(Route.Settings.title),
                     userPreferences = userPreferences,
@@ -786,6 +805,8 @@ fun AppCheckbox(
         Text(text = title)
     }
 }
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1015,7 +1036,7 @@ fun SettingsPage(
                         updateShowDialog(Pair(true, "Theme"))
                     }
                 )
-                if (uiState.showDialog.first == true && uiState.showDialog.second == "Theme") {
+                if (uiState.showDialog.first && uiState.showDialog.second == "Theme") {
                     ChangeSettingsDialog(
                         title = stringResource(R.string.change_app_theme),
                         name = R.array.theme_array,
@@ -1048,10 +1069,9 @@ fun SettingsPage(
                         }
                     }
                 )
-                if (uiState.showDialog.first == true
-                    && uiState.showDialog.second == "Language"
+                if (uiState.showDialog.first && uiState.showDialog.second == "Language"
                 ) {
-                    val localeOptions = listOf<Pair<String, String>>(
+                    val localeOptions = listOf(
                         "en" to "English",
                         "de" to "Deutsch",
                         "fr" to "Français",
@@ -1116,8 +1136,7 @@ fun SettingsPage(
                         updateShowDialog(Pair(true, "Sort_Order"))
                     }
                 )
-                if (uiState.showDialog.first == true
-                    && uiState.showDialog.second == "Sort_Order"
+                if (uiState.showDialog.first && uiState.showDialog.second == "Sort_Order"
                 ) {
                     ChangeSettingsDialog(
                         title = stringResource(R.string.set_sort_order),
@@ -1189,7 +1208,7 @@ fun SettingsPage(
                         contentDescription = stringResource(R.string.share_notifications)
                     )
                 }
-                if (uiState.showDialog.first == true && uiState.showDialog.second == "Apps") {
+                if (uiState.showDialog.first && uiState.showDialog.second == "Apps") {
                     val packages = notifications.groupBy {
                         it.packageName
                     }

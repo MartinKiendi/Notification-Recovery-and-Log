@@ -39,7 +39,7 @@ class NotificationWorkerFactory @Inject constructor(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
-    ): ListenableWorker? = NotificationWorker(
+    ): ListenableWorker = NotificationWorker(
         notificationRepository = notificationRepository,
         context = appContext,
         workerParams = workerParameters
